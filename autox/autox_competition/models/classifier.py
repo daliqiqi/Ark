@@ -11,6 +11,7 @@ import optuna
 from optuna.samplers import TPESampler
 import xgboost as xgb
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import StratifiedKFold
 
 
 class CrossTabnetBiClassifier(object):
@@ -83,6 +84,7 @@ class CrossXgbBiClassifier(object):
 
     def fit(self, X, y, tuning=True, Debug=False):
         log(X.shape)
+
         self.feature_importances_['feature'] = X.columns
         self.scaler = StandardScaler()
         X = self.scaler.fit_transform(X)
@@ -90,11 +92,13 @@ class CrossXgbBiClassifier(object):
         if tuning:
             log("[+]tuning params")
             self.optuna_tuning(X, y, Debug=Debug)
+        folds = StratifiedKFold(n_splits=self.n_fold, shuffle=True)
+                                # , random_state=1)
 
-        folds = KFold(n_splits=self.n_fold, shuffle=True)
+        # folds = KFold(n_splits=self.n_fold, shuffle=True)
         AUCs = []
 
-        for fold_n, (train_index, valid_index) in enumerate(folds.split(X)):
+        for fold_n, (train_index, valid_index) in enumerate(folds.split(X,y)):
 
             start_time = time()
             print('Training on fold {}'.format(fold_n + 1))
@@ -222,12 +226,14 @@ class CrossLgbBiClassifier(object):
             self.N_round = N_round
         if Verbose is not None:
             self.Verbose = Verbose
+        folds = StratifiedKFold(n_splits=self.n_fold, shuffle=True)
 
-        folds = KFold(n_splits=self.n_fold, shuffle=True, random_state=889)
+
+        # folds = KFold(n_splits=self.n_fold, shuffle=True, random_state=889)
         AUCs = []
         self.feature_importances_['feature'] = X.columns
 
-        for fold_n, (train_index, valid_index) in enumerate(folds.split(X)):
+        for fold_n, (train_index, valid_index) in enumerate(folds.split(X,y)):
 
             start_time = time()
             print('Training on fold {}'.format(fold_n + 1))

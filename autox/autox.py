@@ -285,7 +285,7 @@ class AutoX():
             self.dfs_['FE_image'] = None
             log("ignore image feature")
 
-        # auto_encoder
+        # auto_encoder ?
         df = auto_encoder(df, feature_type, id_)
 
         # 特征合并
@@ -322,12 +322,17 @@ class AutoX():
         fimp = self.model_lgb.feature_importances_
         log("feature importance")
         log(fimp)
+        print(fimp["feature"].to_list())
+        # print(fimp.columns)
+        
 
         topk_feas = [x for x in list(fimp['feature']) if x not in df.columns][:topk]
+        # import pdb;pdb.set_trace()
         if return_df:
             return topk_feas, self.train[id_ + topk_feas], self.test[id_ + topk_feas]
         else:
             return topk_feas
+        
 
     def get_submit_ts(self):
 

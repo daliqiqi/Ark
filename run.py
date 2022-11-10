@@ -86,6 +86,8 @@ elif data_name == 'RestaurantRevenue':
     autox = AutoX(target='revenue', train_name='train.csv', test_name='test.csv',
                   id=['Id'], path = path_input)
 
+autox = AutoX(target="target", train_name='train.csv', test_name='test.csv',
+                  id=['id'], path = path_input)
 sub = autox.get_submit()
 
 sub.to_csv(f"{path_output}/autox_{data_name}_oneclick.csv", index = False)
